@@ -1,4 +1,4 @@
 ReversiSharpClient
 ==================
 
-An MS.Net C# client for the reversi stadium written by Fırat Küçük
+An REST API client for the reversi stadium written in MS.Net C#.
