@@ -7,50 +7,47 @@ using System.Threading.Tasks;
 
 namespace ReversiSharpClient
 {
-    class GameClient
+    internal class GameClient
     {
-        private RestClient _restClient = new RestClient(){ BaseUrl = "http://localhost:8080/reversi-stadium/rest" };
-        
+        private readonly RestClient _restClient;
 
-        public Game cancel(string cancellationCode)
+        public GameClient(string baseUrl)
         {
-            var request = new RestRequest(Method.DELETE);
-            request.Resource = "/cancel/{cancellationCode}";
-            request.AddParameter("cancellationCode", cancellationCode, ParameterType.UrlSegment);
-            var response = _restClient.Execute<Game>(request);
-            Game game = response.Data;
-            return game;
+            _restClient = new RestClient {BaseUrl = baseUrl};
         }
 
         //~ ----------------------------------------------------------------------------------------------------------------
-        public Game move(string authCode, string piece)
+        public GameStatus Cancel(string cancellationCode)
         {
-            var request = new RestRequest(Method.PUT);
-            request.Resource = "/move/{authCode}/{piece}";
+            var request = new RestRequest(Method.DELETE) {Resource = "/cancel/{cancellationCode}"};
+            request.AddParameter("cancellationCode", cancellationCode, ParameterType.UrlSegment);
+            var response = _restClient.Execute<GameStatus>(request);
+            return response.Data;
+        }
+
+        //~ ----------------------------------------------------------------------------------------------------------------
+        public GameStatus Move(string authCode, string piece)
+        {
+            var request = new RestRequest(Method.PUT) {Resource = "/move/{authCode}/{piece}"};
             request.AddParameter("authCode", authCode, ParameterType.UrlSegment);
             request.AddParameter("piece", piece, ParameterType.UrlSegment);
-            var response = _restClient.Execute<Game>(request);
+            var response = _restClient.Execute<GameStatus>(request);
             return response.Data;
         }
 
         //~ ----------------------------------------------------------------------------------------------------------------
         public Authorization Start()
         {
-            var request = new RestRequest(Method.POST);
-            request.Resource = "/start";
+            var request = new RestRequest(Method.POST) {Resource = "/start"};
             var response = _restClient.Execute<Authorization>(request);
-            
             return response.Data;
         }
 
         //~ ----------------------------------------------------------------------------------------------------------------
-
-        public Game status()
+        public GameStatus GetStatus()
         {
-            var request = new RestRequest(Method.GET);
-            request.Resource = "/status";
-            var response = _restClient.Execute<Game>(request);
-            Console.Write(response.Content);
+            var request = new RestRequest(Method.GET) {Resource = "/status"};
+            var response = _restClient.Execute<GameStatus>(request);
             return response.Data;
         }
     }

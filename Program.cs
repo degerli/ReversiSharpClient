@@ -7,47 +7,49 @@ using System.Threading.Tasks;
 
 namespace ReversiSharpClient
 {
-    class Program
+    internal class Program
     {
-        Timer timer;
-        GameClient client = new GameClient();
-        string authCode = "qlsg3069";
-        int player = 2;
-        public static AutoResetEvent autoResetEvent
-      = new AutoResetEvent(false);
+        private Timer _timer;
+        private AutoResetEvent _autoResetEvent;
+        private readonly Game _game;
+        private readonly GameClient _client;
 
-        public void baglan()
+        private Program()
         {
-            timer = new Timer(new TimerCallback(DoSomething), null, 1000, 1000);
-            autoResetEvent.WaitOne();
+            _game = Game.GetInstance();
+            _client = new GameClient(_game.BaseUrl);
         }
-        private void DoSomething(Object obj)
+
+        public void Connect()
         {
-            Game game = client.status();
+            _autoResetEvent = new AutoResetEvent(false);
+            var timerDelegate = new TimerCallback(AttemptToPlay);
+            _timer = new Timer(timerDelegate, null, 1000, 1000);
+            _autoResetEvent.WaitOne();
+        }
 
-            if (game.cancelled)
-            {
-                timer.Dispose(autoResetEvent);
-            }
-            else if (!game.started)
-            {
-                timer.Dispose(autoResetEvent);
-            }
-            else if (game.currentPlayer == player)
-            {
+        private void AttemptToPlay(Object obj)
+        {
+            _game.Status = _client.GetStatus();
 
-                List<String> availableMoves = game.availableMoves;
-                Random random = new Random();
-                int randomInt = random.Next(availableMoves.Count);
-                String nextMove = availableMoves[randomInt];
-                client.move(authCode, nextMove);
+            if (_game.Status.Cancelled)
+            {
+                _timer.Dispose(_autoResetEvent);
+            }
+            else if (!_game.Status.Started)
+            {
+                _timer.Dispose(_autoResetEvent);
+            }
+            else if (_game.Status.CurrentPlayer == _game.Player)
+            {
+                _client.Move(_game.AuthCode, _game.Play());
             }
         }
-        static void Main(string[] args)
-        {
-            Program cl = new Program();
-            cl.baglan();
 
+        private static void Main(string[] args)
+        {
+            var program = new Program();
+            program.Connect();
         }
     }
 }

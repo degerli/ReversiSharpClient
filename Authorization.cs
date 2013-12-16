@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ReversiSharpClient
 {
-    class Authorization
+    internal class Authorization
     {
-        public string cancellationCode { get; set; }
-        public string playerBlackAuthCode { get; set; }
-        public string playerWhiteAuthCode { get; set; }
+        public string CancellationCode { get; set; }
+        public string PlayerBlackAuthCode { get; set; }
+        public string PlayerWhiteAuthCode { get; set; }
     }
 }
