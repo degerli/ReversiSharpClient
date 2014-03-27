@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace ReversiSharpClient
 {
-    internal class GameUtils
+    internal static class GameUtils
     {
-        public static readonly int NoPlayer = 0;
-        public static readonly int BlackPlayer = 1;
-        public static readonly int WhitePlayer = 2;
+        private const int NoPlayer = 0;
+        private const int BlackPlayer = 1;
+        private const int WhitePlayer = 2;
 
-        //Game settings
-        public static readonly string BaseUrl = "http://localhost:8080/reversi-stadium/rest";
-        public static readonly string AuthCode = "dxbq6474";
-        public static readonly int Player = BlackPlayer;
+        //GamePlayer settings
+        public const string BaseUrl = "http://stadium2.b3lab.org/rest";
+        public const string AuthCode = "qdww4846";
+        public const int Player = WhitePlayer;
     }
 }

@@ -3,36 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReversiLab.AI;
+using ReversiLab.Play;
+
 
 namespace ReversiSharpClient
 {
-    public class Game
+    public class GamePlayer
     {
         //Singleton instance
-        private static Game _game = null;
+        private static GamePlayer _gamePlayer = null;
 
         // AI 
-        private readonly IReversiPlayer _player;
+        private readonly ReversiPlayer _reversiPlayer;
         public string AuthCode { get; private set; }
         public string BaseUrl { get; private set; }
         public int Player { get; private set; }
 
         public GameStatus Status { get; set; }
 
-        public static Game GetInstance()
+        public static GamePlayer GetInstance()
         {
-            if (_game != null)
+            if (_gamePlayer != null)
             {
-                return _game;
+                return _gamePlayer;
             }
-            _game = new Game();
-            return _game;
+            _gamePlayer = new GamePlayer();
+            return _gamePlayer;
         }
 
-        private Game()
+        private GamePlayer()
         {
             //These will be moved to properties file
-            _player = new RandomReversiPlayer();
+            _reversiPlayer = ReversiPlayerFactory.Create(PlayerType.DynamicMinmax, GameUtils.Player);
             Player = GameUtils.Player;
             AuthCode = GameUtils.AuthCode;
             BaseUrl = GameUtils.BaseUrl;
@@ -40,7 +43,7 @@ namespace ReversiSharpClient
 
         public string Play()
         {
-            return _player.Play(Status);
+            return _reversiPlayer.GetNextMove(Status.ToGame());
         }
     }
 }

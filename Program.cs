@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace ReversiSharpClient
 {
@@ -11,16 +11,16 @@ namespace ReversiSharpClient
     {
         private Timer _timer;
         private AutoResetEvent _autoResetEvent;
-        private readonly Game _game;
+        private readonly GamePlayer _gamePlayer;
         private readonly GameClient _client;
 
         private Program()
         {
-            _game = Game.GetInstance();
-            _client = new GameClient(_game.BaseUrl);
+            _gamePlayer = GamePlayer.GetInstance();
+            _client = new GameClient(_gamePlayer.BaseUrl);
         }
 
-        public void Connect()
+        private void Connect()
         {
             _autoResetEvent = new AutoResetEvent(false);
             var timerDelegate = new TimerCallback(AttemptToPlay);
@@ -30,19 +30,19 @@ namespace ReversiSharpClient
 
         private void AttemptToPlay(Object obj)
         {
-            _game.Status = _client.GetStatus();
+            _gamePlayer.Status = _client.GetStatus();
 
-            if (_game.Status.Cancelled)
+            if (_gamePlayer.Status.Cancelled)
             {
                 _timer.Dispose(_autoResetEvent);
             }
-            else if (!_game.Status.Started)
+            else if (!_gamePlayer.Status.Started)
             {
                 _timer.Dispose(_autoResetEvent);
             }
-            else if (_game.Status.CurrentPlayer == _game.Player)
+            else if (_gamePlayer.Status.CurrentPlayer == _gamePlayer.Player)
             {
-                _client.Move(_game.AuthCode, _game.Play());
+                _client.Move(_gamePlayer.AuthCode, _gamePlayer.Play());
             }
         }
 
