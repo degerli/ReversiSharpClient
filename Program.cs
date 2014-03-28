@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,15 +10,18 @@ namespace ReversiSharpClient
     {
         private Timer _timer;
         private AutoResetEvent _autoResetEvent;
-        private readonly GamePlayer _gamePlayer;
+        private readonly Game _game;
         private readonly GameClient _client;
 
         private Program()
         {
-            _gamePlayer = GamePlayer.GetInstance();
-            _client = new GameClient(_gamePlayer.BaseUrl);
+            _game = Game.GetInstance();
+            _client = new GameClient(_game.BaseUrl);
         }
 
+        /// <summary>
+        /// Creates a thread that calls AttemptToPlay method once in a second
+        /// </summary>
         private void Connect()
         {
             _autoResetEvent = new AutoResetEvent(false);
@@ -28,21 +30,26 @@ namespace ReversiSharpClient
             _autoResetEvent.WaitOne();
         }
 
+        /// <summary>
+        /// Communicates with the server
+        /// </summary>
+        /// <param name="obj"></param>
+
         private void AttemptToPlay(Object obj)
         {
-            _gamePlayer.Status = _client.GetStatus();
+            _game.Status = _client.GetStatus(); //HTTP GETs the status
 
-            if (_gamePlayer.Status.Cancelled)
+            if (_game.Status.Cancelled)
             {
-                _timer.Dispose(_autoResetEvent);
+                _timer.Dispose(_autoResetEvent); //Exits the thread
             }
-            else if (!_gamePlayer.Status.Started)
+            else if (!_game.Status.Started)
             {
-                _timer.Dispose(_autoResetEvent);
+                _timer.Dispose(_autoResetEvent); //Exits the thread
             }
-            else if (_gamePlayer.Status.CurrentPlayer == _gamePlayer.Player)
+            else if (_game.Status.CurrentPlayer == _game.Player) //If it is our turn
             {
-                _client.Move(_gamePlayer.AuthCode, _gamePlayer.Play());
+                _client.Move(_game.AuthCode, _game.GetNextMove()); //HTTP POST our move
             }
         }
 

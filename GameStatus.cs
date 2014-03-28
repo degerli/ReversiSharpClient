@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +16,9 @@ namespace ReversiSharpClient
         public bool Started { get; set; }
         public List<string> AvailableMoves { get; set; }
         
-        public Game ToGame()
+        public ReversiLab.Rules.Game ToGame()
         {
-            Game game = new Game();
+            var game = new ReversiLab.Rules.Game();
             game.CurrentPlayer = CurrentPlayer;
             game.AvailableMoves = AvailableMoves;
             game.BoardState = BoardState;

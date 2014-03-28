@@ -1,7 +1,6 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +9,7 @@ namespace ReversiSharpClient
     internal class GameClient
     {
         private readonly RestClient _restClient;
+
 
         public GameClient(string baseUrl)
         {
